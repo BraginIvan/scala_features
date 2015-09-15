@@ -8,7 +8,7 @@ import scala.reflect.macros.whitebox.Context
  */
 object ParseCaseClass {
 
-  def st[T]:List[(String,Any)] = macro st_impl[T]
+  def apply[T]:List[(String,Any)] = macro st_impl[T]
 
   def st_impl[A : c.WeakTypeTag](c: Context): c.Expr[List[(String,Any)]] = {
     import c.universe._

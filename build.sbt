@@ -2,7 +2,16 @@ name := "scala_features"
 
 version := "1.0"
 
+test in assembly := {}
+
 scalaVersion := "2.11.7"
+
+assemblyMergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
+{
+  case x if x.contains("META-INF/io.netty.versions.properties") => MergeStrategy.first
+  case x:String => old(x)
+}
+}
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 

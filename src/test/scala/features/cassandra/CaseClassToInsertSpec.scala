@@ -9,15 +9,23 @@ import org.scalatest.WordSpecLike
  */
 class CaseClassToInsertSpec extends WordSpecLike{
 
-  case class testCaseClass(a: Int, b: String, c: String) extends CaseClassToInsert{
-    def statement = prepareStatement("name", ParseCaseClass.st[this.type])
+  case class testCaseClass(firstColumn: Int, b: String, c: String) extends CaseClassToInsert{
+    def statement = prepareStatement("name", ParseCaseClass[this.type])
   }
+  val instance = testCaseClass(1, "str", "str2")
+
 
   "case class" must{
     "generate insert" in{
-      val  generetedInsert = testCaseClass(1, "str", "str2").statement
-      val checkingInsert = QueryBuilder.insertInto("name").value("a", 1).value("b", "str").value("c", "str2")
-      assert(generetedInsert.getQueryString == checkingInsert.getQueryString)
+      val generatedInsert = instance.statement
+      val checkingInsert = QueryBuilder.insertInto("name").value("first_column", 1).value("b", "str").value("c", "str2")
+      assert(generatedInsert.getQueryString == checkingInsert.getQueryString)
     }
+
+
+
   }
+
+
+
 }
