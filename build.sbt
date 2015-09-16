@@ -1,4 +1,8 @@
+import pl.project13.scala.sbt.JmhPlugin
+
 name := "scala_features"
+
+enablePlugins(JmhPlugin)
 
 //scalacOptions += "-Ymacro-debug-lite"
 
@@ -28,3 +32,7 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.7"
 
 libraryDependencies += "joda-time" % "joda-time" % "2.8.1"
+
+libraryDependencies += "org.openjdk.jmh" % "jmh-core-benchmarks" % "1.11"
+
+libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.11"
