@@ -4,7 +4,8 @@ import com.datastax.driver.core.querybuilder.{QueryBuilder, Insert}
 import macroses.CaseClassToInsert
 import macroses.CaseClassToInsert._
 import org.joda.time.DateTime
-import org.openjdk.jmh.annotations.{State, Benchmark}
+import org.openjdk.jmh.annotations.{Fork, Scope, State, Benchmark}
+import scala.collection.JavaConverters._
 
 /**
  * Created by bragi_000 on 16.09.2015.
@@ -13,11 +14,11 @@ import org.openjdk.jmh.annotations.{State, Benchmark}
 
 case class TestCaseClass(
                           @transient firstColumn: Int,
-                          b: String,
-                          c: String,
-                          a: String,
-                          a1: String,
-                          a3: String,
+                          mapStrDouble: Map[String, Double],
+                          listStr: List[String],
+                          optListStr: Option[List[String]],
+                          date: DateTime,
+                          mapStrBoolean: Map[String, Boolean],
                           a4: String,
                           a5: String,
                           a6: String,
@@ -40,48 +41,80 @@ case class TestCaseClass(
                           al0: String
 
                           ){
+
+  val list = List(
+    ("mapStrDouble", mapStrDouble)
+    ,("listStr", listStr)
+    ,("optListStr", optListStr)
+    ,("date", date)
+    ,("mapStrBoolean", mapStrBoolean)
+    ,("dm7", a4)
+    ,("dm8", a5)
+    ,("dm9", a6)
+    ,("dm0", a7)
+    ,("dk0", a8)
+    ,("dk1", a9)
+    ,("dk2", a10)
+    ,("dk3", ah)
+    ,("dk4", af)
+    ,("dk5", ai)
+    ,("dk6", al1)
+    ,("dk7", al5)
+    ,("d1",  al7)
+    ,("d2",  al9)
+    ,("d3",  al8)
+    ,("d4",  al6)
+    ,("d5",  al3)
+    ,("d03",  al4)
+    ,("d04",  al2)
+    ,("d05",  al1)
+  )
   import Impl.InsertScalaValue
-  def statement = CaseClassToInsert[this.type]("name")
-  def statement2 = QueryBuilder.insertInto("name")
-    .scalaValue("d", 1)
-    .scalaValue("dm1", 1)
-    .scalaValue("dm2", "ffs")
-    .scalaValue("dm3", "ffs")
-    .scalaValue("dm4", "ffs")
-    .scalaValue("dm5", "ffs")
-    .scalaValue("dm6", "ffs")
-    .scalaValue("dm7", "ffs")
-    .scalaValue("dm8", "ffs")
-    .scalaValue("dm9", "ffs")
-    .scalaValue("dm0", "ffs")
-    .scalaValue("dk0", "ffs")
-    .scalaValue("dk1", "ffs")
-    .scalaValue("dk2", "ffs")
-    .scalaValue("dk3", "ffs")
-    .scalaValue("dk4", "ffs")
-    .scalaValue("dk5", "ffs")
-    .scalaValue("dk6", "ffs")
-    .scalaValue("dk7", "ffs")
-    .scalaValue("d1", "fgjh")
-    .scalaValue("d2", "fgjh")
-    .scalaValue("d3", "fgjh")
-    .scalaValue("d4", "fgjh")
-    .scalaValue("d5", "fgjh")
+  def macrosStatement = CaseClassToInsert[this.type]("name")
+  def macrosCopyStatement = list.foldLeft(QueryBuilder.insertInto("name"))((newInsert, next) =>  newInsert.scalaValue(next._1, next._2))
+  def fastStatement = QueryBuilder.insertInto("name")
+    .value("dm2", mapStrDouble.map {case (k, v) => k -> java.lang.Double.valueOf(v)})
+    .value("listStr", listStr.asJava)
+    .value("optListStr", optListStr.map(_.asJava).orNull)
+    .value("date", date.toDate)
+    .value("mapStrBoolean", mapStrBoolean.map {case (k, v) => k -> java.lang.Boolean.valueOf(v)})
+    .value("dm7", a4)
+    .value("dm8", a5)
+    .value("dm9", a6)
+    .value("dm0", a7)
+    .value("dk0", a8)
+    .value("dk1", a9)
+    .value("dk2", a10)
+    .value("dk3", ah)
+    .value("dk4", af)
+    .value("dk5", ai)
+    .value("dk6", al1)
+    .value("dk7", al5)
+    .value("d1",  al7)
+    .value("d2",  al9)
+    .value("d3",  al8)
+    .value("d4",  al6)
+    .value("d5",  al3)
+    .value("d03",  al4)
+    .value("d04",  al2)
+    .value("d05",  al1)
 }
 
+@Fork(1)
+@State(Scope.Benchmark)
 class MacrosTest {
 
+val instance = TestCaseClass(1, Map(("5" -> 5d), ("6" -> 6d),("7" -> 7d),("8" -> 8d)), List("str2", "s", "d"), None, DateTime.now(),
+  Map(("5" -> true), ("6" -> true),("7" -> false),("8" -> false)),
+  "str2","str", "str2","str", "str2","str", "str2","str", "str2","str",
+  "str2","str", "str2","str", "str2","str", "str2","str", "str2","str")
 
-
-/*  @Benchmark
-  def helloWorld = TestCaseClass(1, "str", "str2","str", "str2","str",
-    "str2","str", "str2","str", "str2","str", "str2","str", "str2","str",
-    "str2","str", "str2","str", "str2","str", "str2","str", "str2","str").statement
-  import Impl.InsertScalaValue*/
   @Benchmark
-  def helloWorld2 = TestCaseClass(1, "str", "str2","str", "str2","str",
-    "str2","str", "str2","str", "str2","str", "str2","str", "str2","str",
-    "str2","str", "str2","str", "str2","str", "str2","str", "str2","str").statement
+  def macros = instance.macrosStatement
+  @Benchmark
+  def macrosCopy = instance.macrosCopyStatement
+  @Benchmark
+  def fast = instance.fastStatement
  /* import Impl.InsertScalaValue
   @Benchmark
   def HelloWorld3 = List(
