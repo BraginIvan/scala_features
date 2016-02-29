@@ -12,6 +12,8 @@ test in assembly := {}
 
 scalaVersion := "2.11.7"
 
+assemblyOption in assembly ~= { _.copy(includeScala = false).copy(includeDependency = false) }
+
 assemblyMergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
 {
   case x if x.contains("META-INF/io.netty.versions.properties") => MergeStrategy.first
@@ -36,3 +38,5 @@ libraryDependencies += "joda-time" % "joda-time" % "2.8.1"
 libraryDependencies += "org.openjdk.jmh" % "jmh-core-benchmarks" % "1.11"
 
 libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.11"
+
+libraryDependencies += "io.spray" %%  "spray-json" % "1.3.2"

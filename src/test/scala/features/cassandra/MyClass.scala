@@ -7,9 +7,12 @@ import macroses.CaseClassToInsert
  */
 case class MyClass(
                     firstColumn: Int,
-                    b: String,
-                    c: String){
+                    b: List[String],
+                    c: Option[String],
+                    s: Int,
+                    map: Map[String, Double]
+                    ){
 
   import bench.Impl.InsertScalaValue
-  def statement = CaseClassToInsert[this.type]("makros")
+  def statement = CaseClassToInsert[this.type]("macros")
 }

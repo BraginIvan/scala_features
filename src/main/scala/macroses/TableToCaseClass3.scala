@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 /**
  * Created by ivan on 9/11/15.
  */
-object TableToCaseClass2 {
+object TableToCaseClass3 {
 
   def instantiate[T](klass: Class[T]): Seq[Any] => T = {
     args:Seq[Any] =>
