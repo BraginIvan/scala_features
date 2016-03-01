@@ -63,15 +63,14 @@ object TableToCaseClass
               else
                 macrosStr.parseJson.convertTo[$ty]
             """
+
           case t if t <:< typeOf[List[JsonSerializable]] =>
-            q"""
-               row.getList($decoded, classOf[String]).toList.map(_.parseJson.convertTo[${getListInnerType(ty)}])"""
-          case t if t <:< typeOf[List[Any]] =>
-            q"""
-               row.getList($decoded, classOf[${getListInnerType(ty)}]).toList"""
-          case t if t <:< typeOf[Option[Any]] =>
-            q"""
-               Option(${getExtractor(getOptionInnerType(ty))})"""
+            q"""row.getList($decoded, classOf[String]).toList.map(_.parseJson.convertTo[${getListInnerType(ty)}])"""
+
+          case t if t <:< typeOf[List[Any]] => q"""row.getList($decoded, classOf[${getListInnerType(ty)}]).toList"""
+
+          case t if t <:< typeOf[Option[Any]] => q"""Option(${getExtractor(getOptionInnerType(ty))})"""
+
           case t if t <:< typeOf[JsonSerializable] =>
             q"""
               val macrosStr = row.getString($decoded)
@@ -80,12 +79,10 @@ object TableToCaseClass
               else
                 macrosStr.parseJson.convertTo[$ty]
             """
-          case t if t =:= typeOf[DateTime] =>
-            q"""
-               new DateTime(row.getDate($decoded))"""
-          case _ =>
-            q"""
-                row.getObject($decoded).asInstanceOf[$ty]"""
+
+          case t if t =:= typeOf[DateTime] => q"""new DateTime(row.getDate($decoded))"""
+
+          case _ => q"""row.getObject($decoded).asInstanceOf[$ty]"""
         }
       }
       getExtractor(returnType)
