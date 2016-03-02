@@ -1,12 +1,12 @@
 import pl.project13.scala.sbt.JmhPlugin
 
-name := "scala_features"
+name := "macros"
 
-enablePlugins(JmhPlugin)
+organization := "com.kountable"
 
 //scalacOptions += "-Ymacro-debug-lite"
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
 
 test in assembly := {}
 
@@ -31,12 +31,22 @@ libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
 
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
-libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.7"
+libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.9"
 
-libraryDependencies += "joda-time" % "joda-time" % "2.8.1"
-
-libraryDependencies += "org.openjdk.jmh" % "jmh-core-benchmarks" % "1.11"
-
-libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.11"
+libraryDependencies += "joda-time" % "joda-time" % "2.9.2"
 
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.2"
+
+publishArtifact in (Compile, packageSrc) := false
+
+// repo url here
+publishTo := {
+  Some("Kountable internal maven2 repo" at "http://registry.cluster.kountable.com:8080/repository/internal/")
+}
+
+publishMavenStyle := true
+
+credentials += Credentials("Repository Archiva Managed internal Repository",
+  "registry.cluster.kountable.com",
+  "admin",
+  "8aVgXaxwM")

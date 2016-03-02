@@ -12,13 +12,13 @@ import scala.reflect.macros.whitebox.Context
 
 object TableToCaseClass
 {
-  def apply[T]: T = macro materializeMappableImpl[T]
+  def apply[T]: T = macro implementetion[T]
 
   implicit class ColumnLowCase(str: String){
     def toColumnCase:String =  str.replaceAll("(\\p{Lower})(\\p{Upper})","$1_$2").toLowerCase
   }
 
-  def materializeMappableImpl[T: c.WeakTypeTag](c: Context): c.Expr[T] = {
+  def implementetion[T: c.WeakTypeTag](c: Context): c.Expr[T] = {
     import c.universe._
     val tpe = weakTypeOf[T]
     val companion = tpe.typeSymbol.companion
